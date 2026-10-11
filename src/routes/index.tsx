@@ -88,7 +88,7 @@ function Shop() {
     ...editableProducts.find((item) => item.id === product.id),
   }));
 
-  function updateProduct(id: number, key: keyof EditableProduct, value: string) {
+  function updateProduct(id: number, key: Exclude<keyof EditableProduct, 'id'>, value: string) {
     setEditableProducts((current) => current.map((product) => product.id === id ? { ...product, [key]: value } : product));
   }
 
