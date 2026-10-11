@@ -4,7 +4,6 @@ import { ArrowUpRight, ArrowDown, Plus, X, Asterisk } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import proposta from '@/assets/proposta.jpg';
 import orcamento from '@/assets/orcamento.jpg';
-import guia from '@/assets/guia.jpg';
 
 export const Route = createFileRoute('/')({
   head: () => ({ meta: [
@@ -21,12 +20,10 @@ export const Route = createFileRoute('/')({
 const products = [
   { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '49,90', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
   { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
-  { id: 3, name: 'Guia de formatos de arquivos', category: 'Guias', subtitle: 'PARA SUA ROTINA CRIATIVA', price: '14,90', oldPrice: '19,90', image: guia, label: 'OFERTA', description: 'Cada formato tem seu lugar. Um guia para organizar as escolhas de arquivos em seus projetos criativos.' },
 ];
 type Product = typeof products[number];
 
 function Shop() {
-  const [filter, setFilter] = useState('Todos');
   const [selected, setSelected] = useState<Product | null>(null);
   useEffect(() => {
     if (!selected) return;
@@ -60,10 +57,9 @@ function Shop() {
       <div className="ticker" aria-hidden="true"><div className="ticker-track">{Array.from({ length: 10 }, (_, i) => <span className="flex items-center gap-9" key={i}>ARQUIVOS PARA BOAS IDEIAS <span className="ticker-star">✳</span> CRIE DO SEU JEITO <span className="ticker-star">✳</span></span>)}</div></div>
       <section id="colecao" className="collection page-width">
         <div className="collection-top">
-          <div><p className="eyebrow text-muted-foreground mb-3">ESCOLHIDOS PARA VOCÊ</p><h2 className="section-title">A coleção<span className="text-muted-foreground text-sm font-sans ml-3">/ 03</span></h2></div>
-          <div className="filters" role="group" aria-label="Filtrar coleção">{['Todos', 'Modelos', 'Guias'].map(category => <Button key={category} variant={filter === category ? 'filterActive' : 'filter'} size="sm" aria-pressed={filter === category} onClick={() => setFilter(category)}>{category}</Button>)}</div>
+          <div><p className="eyebrow text-muted-foreground mb-3">ESCOLHIDOS PARA VOCÊ</p><h2 className="section-title">A coleção<span className="text-muted-foreground text-sm font-sans ml-3">/ 02</span></h2></div>
         </div>
-        <div className="product-grid">{products.filter(product => filter === 'Todos' || product.category === filter).map(product => <article key={product.id}>
+        <div className="product-grid">{products.map(product => <article key={product.id}>
           <a href={`#produto-${product.id}`} className="product-image block" aria-label={`Ver ${product.name}`} onClick={event => { event.preventDefault(); setSelected(product); }}>
             <img src={product.image} alt={`Páginas do ${product.name}`} width={1024} height={1024} loading="lazy" />
             {product.label && <span className={`product-label ${product.oldPrice ? 'sale' : ''}`}>{product.label}</span>}
