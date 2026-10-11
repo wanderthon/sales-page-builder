@@ -19,8 +19,8 @@ export const Route = createFileRoute('/')({
 });
 
 const products = [
-  { id: 1, name: 'Proposta comercial', category: 'Modelos', subtitle: 'IDENTIDADE VISUAL', price: '59,90', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
-  { id: 2, name: 'Orçamento simplificado', category: 'Modelos', subtitle: 'CLAREZA EM CADA DETALHE', price: '19,90', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
+  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '49,90', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
+  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
   { id: 3, name: 'Guia de formatos de arquivos', category: 'Guias', subtitle: 'PARA SUA ROTINA CRIATIVA', price: '14,90', oldPrice: '19,90', image: guia, label: 'OFERTA', description: 'Cada formato tem seu lugar. Um guia para organizar as escolhas de arquivos em seus projetos criativos.' },
 ];
 type Product = typeof products[number];
