@@ -9,6 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        shop: "rounded-md bg-primary text-primary-foreground hover:bg-primary/85 font-medium",
+        filter: "rounded-full border border-border bg-background text-muted-foreground hover:bg-muted px-4",
+        filterActive: "rounded-full border border-primary bg-primary text-primary-foreground px-4",
+        product: "rounded-md border border-border bg-background text-foreground hover:bg-primary hover:text-primary-foreground text-xs",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
