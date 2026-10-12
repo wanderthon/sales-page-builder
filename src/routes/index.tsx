@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import proposta from '@/assets/proposta.jpg';
 import orcamento from '@/assets/orcamento.jpg';
 
+// Imagens da loja (src/assets/*.webp). Se algum arquivo ainda não existir, a página usa o fallback.
+const assetUrls = import.meta.glob('/src/assets/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const asset = (name: string): string | undefined => assetUrls['/src/assets/' + name];
+
 export const Route = createFileRoute('/')({
   head: () => ({ meta: [
     { title: 'Seu estúdio — Loja criativa' },
@@ -18,8 +22,8 @@ export const Route = createFileRoute('/')({
 });
 
 const initialProducts = [
-  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '49,90', buyUrl: '', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
-  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', buyUrl: '', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
+  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: 'R$ 49,90 - 8 modelos profissionais de contratos', price: '49,90', buyUrl: '', image: asset('produto-contratos.webp') ?? proposta, label: 'MAIS VENDIDO', description: 'Trabalho bom merece ser protegido. 8 modelos de contrato para designers, prontos para editar, com escopo, prazos, pagamento, revisões e direitos de uso bem definidos. Menos complicações, mais segurança em cada projeto.' },
+  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: 'R$ 39,90 - 8 roteiros de briefings', price: '39,90', buyUrl: '', image: asset('produto-briefings.webp') ?? orcamento, label: '', description: 'O briefing certo começa com as perguntas certas. 8 roteiros prontos para designers alinharem expectativas com o cliente desde o primeiro contato.' },
 ];
 type Product = typeof initialProducts[number];
 type EditableProduct = Pick<Product, 'id' | 'name' | 'category' | 'subtitle' | 'price' | 'buyUrl' | 'label' | 'description' | 'image'>;
@@ -105,37 +109,37 @@ function fileToDataUrl(file: File): Promise<string> {
 }
 
 const defaults = {
-  shopName: 'seu estúdio',
-  eyebrow: 'PEQUENOS RECURSOS. GRANDES POSSIBILIDADES.',
-  headline: 'Sua loja',
-  heroCopy: 'Boas ideias merecem um bom começo.\nModelos e guias para o seu próximo projeto.',
-  collectionEyebrow: 'ESCOLHIDOS PARA VOCÊ',
-  collectionTitle: 'A coleção',
-  aboutTitle: 'Espaço para suas boas ideias.',
+  shopName: 'WANDERTHON.art',
+  eyebrow: '',
+  headline: 'VOCÊ FAZ O DESIGN, A PARTE CHATA É COMIGO',
+  heroCopy: '',
+  collectionEyebrow: 'MODELOS PRA VOCÊ',
+  collectionTitle: 'Agilize seu processo',
+  aboutTitle: 'Poupe seu tempo e ganhe mais dinheiro regularizando seu processo.',
   aboutCopy: 'Uma coleção de recursos que simplificam o começo e deixam o resto com você. Porque cada projeto tem uma história, e a próxima pode ser a sua.',
-  heroColor: '#f5f4ef',
-  backgroundColor: '#fbfaf6',
-  logoDot: '.',
+  heroColor: '#f4e85b',
+  backgroundColor: '#e2e2e2',
+  logoDot: '',
   logoDotColor: '#777777',
-  heroImage: '',
-  contactLink: '',
+  heroImage: asset('hero.webp') ?? '',
+  contactLink: 'https://wa.link/rzzyx4',
   instagram: '',
 };
 
 const defaultMicrocopy = {
-  navAbout: 'Sobre', navFaq: 'Dúvidas', navStore: 'A loja', heroButton: 'Explore a coleção',
-  tickerOne: 'ARQUIVOS PARA BOAS IDEIAS', tickerTwo: 'CRIE DO SEU JEITO',
-  stampTop: 'feito para', stampBottom: 'criar mais', collectionCta: 'Compre aqui',
+  navAbout: 'Sobre', navFaq: 'Dúvidas', navStore: 'Arquivos', heroButton: 'Explore a coleção',
+  tickerOne: 'MODELOS QUE FACILITAM', tickerTwo: 'EDITE DO SEU JEITO',
+  stampTop: '', stampBottom: '', collectionCta: 'Compre aqui',
   aboutEyebrow: 'MENOS COMPLICAÇÃO, MAIS CRIAÇÃO', faqEyebrow: 'VALE SABER', faqTitle: 'Alguma dúvida?',
   footerTagline: 'Feito para criar.', footerBack: 'Voltar à coleção', contactTitle: 'Vamos conversar?',
-  detailsButton: 'Detalhes', detailPriceNote: 'O preço pode ser informado na página de compra.', footerCopyright: '© 2026',
-  phoneLabel: 'Conversar no privado', instagramLabel: 'Ver perfil no Instagram',
+  detailsButton: 'Detalhes', detailPriceNote: '', footerCopyright: '© 2026',
+  phoneLabel: 'Whatsapp', instagramLabel: 'Instagram',
 };
 
 const defaultFaqs = [
-  { question: 'O que encontro na coleção?', answer: 'Modelos de documentos e guias para projetos criativos. Explore cada produto para conhecer a proposta.' },
-  { question: 'Posso personalizar os materiais?', answer: 'A proposta dos modelos é servir como ponto de partida para sua identidade, seus textos e suas ideias.' },
-  { question: 'Onde vejo os detalhes de cada produto?', answer: 'Os detalhes estão disponíveis na apresentação de cada item da coleção.' },
+  { question: 'Posso editar e colocar minha marca?', answer: 'Sim. Você pode alterar perguntas, ordem e visual para encaixar no seu jeito de atender.' },
+  { question: 'Serve para quem está começando?', answer: 'Sim. Se você ainda não sabe que perguntas fazer ao cliente, é justamente para isso. Para quem já tem processo, funciona como base para padronizar.' },
+  { question: 'O cliente preenche sozinho ou uso numa conversa?', answer: 'Funciona das duas formas: você envia para o cliente responder ou usa como roteiro numa chamada.' },
 ];
 
 function Shop() {
