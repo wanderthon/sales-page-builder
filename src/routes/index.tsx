@@ -22,7 +22,7 @@ const initialProducts = [
   { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', buyUrl: '', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
 ];
 type Product = typeof initialProducts[number];
-type EditableProduct = Pick<Product, 'id' | 'name' | 'subtitle' | 'price' | 'buyUrl' | 'label' | 'description' | 'image'>;
+type EditableProduct = Pick<Product, 'id' | 'name' | 'category' | 'subtitle' | 'price' | 'buyUrl' | 'label' | 'description' | 'image'>;
 
 const CONFIG_KEY = 'sales-page-builder-config';
 const DB_NAME = 'sales-page-builder';
@@ -158,7 +158,7 @@ function Shop() {
   const [instagram, setInstagram] = useState(defaults.instagram);
   const [microcopy, setMicrocopy] = useState(defaultMicrocopy);
   const [faqs, setFaqs] = useState(defaultFaqs);
-  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, subtitle, price, buyUrl, label, description, image }) => ({ id, name, subtitle, price, buyUrl, label, description, image })));
+  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, category, subtitle, price, buyUrl, label, description, image }) => ({ id, name, category, subtitle, price, buyUrl, label, description, image })));
 
   useEffect(() => {
     let active = true;
@@ -269,7 +269,7 @@ function Shop() {
       <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.32), rgba(0,0,0,.12)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
         <div className="hero-inner page-width">
           <p className="eyebrow flex items-center gap-2"><Asterisk size={15} /> {eyebrow}</p>
-          <h1 className="hero-title">{headline}<span style={{ color: logoDotColor }}>{logoDot}</span></h1>
+          <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>
           <div className="hero-stamp" aria-hidden="true">{microcopy.stampTop}<span>✳</span>{microcopy.stampBottom}</div>
           <div className="hero-bottom">
             <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
@@ -339,6 +339,7 @@ function Shop() {
             {editableProducts.map((product, index) => <div className="editor-product" key={product.id}>
               <h3>Produto {index + 1}</h3>
               <label>Nome<input value={product.name} onChange={e => updateProduct(product.id, 'name', e.target.value)} /></label>
+              <label>Categoria<input value={product.category} onChange={e => updateProduct(product.id, 'category', e.target.value)} /></label>
               <label>Subtítulo<input value={product.subtitle} onChange={e => updateProduct(product.id, 'subtitle', e.target.value)} /></label>
               <label>Preço (R$), opcional<input value={product.price} onChange={e => updateProduct(product.id, 'price', e.target.value)} /></label>
               <label>Link do botão “Compre aqui”<input type="url" placeholder="https://checkout..." value={product.buyUrl} onChange={e => updateProduct(product.id, 'buyUrl', e.target.value)} /></label>
