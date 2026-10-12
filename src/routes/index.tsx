@@ -290,10 +290,10 @@ function Shop() {
       </nav>
     </header>
     <main>
-      <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.32), rgba(0,0,0,.12)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
+      <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.12), rgba(0,0,0,.03)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
         <div className="hero-inner page-width">
           <p className="eyebrow flex items-center gap-2"><Asterisk size={15} /> {eyebrow}</p>
-          <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>
+          {!heroImage && <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>}
           <div className="hero-stamp" aria-hidden="true">{microcopy.stampTop}<span>✳</span>{microcopy.stampBottom}</div>
           <div className="hero-bottom">
             <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
