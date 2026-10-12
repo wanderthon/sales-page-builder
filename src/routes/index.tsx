@@ -4,6 +4,9 @@ import { ArrowUpRight, ArrowDown, Plus, X, Settings2, Save, RotateCcw, Eye } fro
 import { Button } from '@/components/ui/button';
 import proposta from '@/assets/proposta.jpg';
 import orcamento from '@/assets/orcamento.jpg';
+import heroAsset from '@/assets/hero.webp.asset.json';
+import contratosAsset from '@/assets/produto-contratos.webp.asset.json';
+import briefingsAsset from '@/assets/produto-briefings.webp.asset.json';
 
 // Imagens da loja (src/assets/*.webp). Se algum arquivo ainda não existir, a página usa o fallback.
 const assetUrls = import.meta.glob('/src/assets/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
@@ -22,8 +25,8 @@ export const Route = createFileRoute('/')({
 });
 
 const initialProducts = [
-  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: 'R$ 49,90 - 8 modelos profissionais de contratos', price: '49,90', buyUrl: '', image: asset('produto-contratos.webp') ?? proposta, label: 'MAIS VENDIDO', description: 'Trabalho bom merece ser protegido. 8 modelos de contrato para designers, prontos para editar, com escopo, prazos, pagamento, revisões e direitos de uso bem definidos. Menos complicações, mais segurança em cada projeto.' },
-  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: 'R$ 39,90 - 8 roteiros de briefings', price: '39,90', buyUrl: '', image: asset('produto-briefings.webp') ?? orcamento, label: '', description: 'O briefing certo começa com as perguntas certas. 8 roteiros prontos para designers alinharem expectativas com o cliente desde o primeiro contato.' },
+  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: 'R$ 49,90 - 8 modelos profissionais de contratos', price: '49,90', buyUrl: '', image: asset('produto-contratos.webp') ?? contratosAsset.url ?? proposta, label: 'MAIS VENDIDO', description: 'Trabalho bom merece ser protegido. 8 modelos de contrato para designers, prontos para editar, com escopo, prazos, pagamento, revisões e direitos de uso bem definidos. Menos complicações, mais segurança em cada projeto.' },
+  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: 'R$ 39,90 - 8 roteiros de briefings', price: '39,90', buyUrl: '', image: asset('produto-briefings.webp') ?? briefingsAsset.url ?? orcamento, label: '', description: 'O briefing certo começa com as perguntas certas. 8 roteiros prontos para designers alinharem expectativas com o cliente desde o primeiro contato.' },
 ];
 type Product = typeof initialProducts[number];
 type EditableProduct = Pick<Product, 'id' | 'name' | 'category' | 'subtitle' | 'price' | 'buyUrl' | 'label' | 'description' | 'image'>;
@@ -121,7 +124,7 @@ const defaults = {
   backgroundColor: '#e2e2e2',
   logoDot: '',
   logoDotColor: '#777777',
-  heroImage: asset('hero.webp') ?? '',
+  heroImage: asset('hero.webp') ?? heroAsset.url ?? '',
   contactLink: 'https://wa.link/rzzyx4',
   instagram: '',
 };
