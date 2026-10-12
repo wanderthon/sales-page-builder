@@ -22,7 +22,74 @@ const initialProducts = [
   { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
 ];
 type Product = typeof initialProducts[number];
-type EditableProduct = Pick<Product, 'id' | 'name' | 'subtitle' | 'price' | 'label' | 'description'>;
+type EditableProduct = Pick<Product, 'id' | 'name' | 'subtitle' | 'price' | 'label' | 'description' | 'image'>;
+
+const CONFIG_KEY = 'sales-page-builder-config';
+const DB_NAME = 'sales-page-builder';
+const STORE_NAME = 'settings';
+
+function openConfigDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error ?? new Error('Não foi possível abrir o banco local.'));
+  });
+}
+
+async function readSavedConfig(): Promise<any | null> {
+  try {
+    if ('indexedDB' in window) {
+      const db = await openConfigDb();
+      const value = await new Promise<any>((resolve, reject) => {
+        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(CONFIG_KEY);
+        request.onsuccess = () => resolve(request.result ?? null);
+        request.onerror = () => reject(request.error);
+      });
+      db.close();
+      if (value) return value;
+    }
+  } catch (error) { console.warn('IndexedDB indisponível, tentando armazenamento local.', error); }
+  const legacy = window.localStorage.getItem(CONFIG_KEY);
+  return legacy ? JSON.parse(legacy) : null;
+}
+
+async function writeSavedConfig(config: unknown): Promise<void> {
+  if (!('indexedDB' in window)) throw new Error('Este navegador não oferece armazenamento local compatível.');
+  const db = await openConfigDb();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      transaction.objectStore(STORE_NAME).put(config, CONFIG_KEY);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error ?? new Error('Falha ao gravar as alterações.'));
+      transaction.onabort = () => reject(transaction.error ?? new Error('O navegador cancelou a gravação.'));
+    });
+  } finally { db.close(); }
+}
+
+async function removeSavedConfig(): Promise<void> {
+  window.localStorage.removeItem(CONFIG_KEY);
+  if (!('indexedDB' in window)) return;
+  const db = await openConfigDb();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      transaction.objectStore(STORE_NAME).delete(CONFIG_KEY);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error ?? new Error('Não foi possível remover as configurações.'));
+    });
+  } finally { db.close(); }
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => typeof reader.result === 'string' ? resolve(reader.result) : reject(new Error('Não foi possível ler a imagem.'));
+    reader.onerror = () => reject(new Error('Falha ao ler o arquivo de imagem.'));
+    reader.readAsDataURL(file);
+  });
+}
 
 const defaults = {
   shopName: 'seu estúdio',
@@ -51,13 +118,12 @@ function Shop() {
   const [aboutCopy, setAboutCopy] = useState(defaults.aboutCopy);
   const [heroColor, setHeroColor] = useState(defaults.heroColor);
   const [backgroundColor, setBackgroundColor] = useState(defaults.backgroundColor);
-  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, subtitle, price, label, description }) => ({ id, name, subtitle, price, label, description })));
+  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, subtitle, price, label, description, image }) => ({ id, name, subtitle, price, label, description, image })));
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('sales-page-builder-config');
-      if (!saved) return;
-      const config = JSON.parse(saved);
+    let active = true;
+    readSavedConfig().then((config) => {
+      if (!active || !config) return;
       setShopName(config.shopName ?? defaults.shopName);
       setEyebrow(config.eyebrow ?? defaults.eyebrow);
       setHeadline(config.headline ?? defaults.headline);
@@ -68,10 +134,14 @@ function Shop() {
       setAboutCopy(config.aboutCopy ?? defaults.aboutCopy);
       setHeroColor(config.heroColor ?? defaults.heroColor);
       setBackgroundColor(config.backgroundColor ?? defaults.backgroundColor);
-      if (Array.isArray(config.products)) setEditableProducts(config.products);
-    } catch {
-      localStorage.removeItem('sales-page-builder-config');
-    }
+      if (Array.isArray(config.products)) {
+        setEditableProducts(initialProducts.map((base) => ({ ...base, ...config.products.find((item: EditableProduct) => item.id === base.id) })));
+      }
+    }).catch((error) => {
+      console.error('Não foi possível carregar as alterações salvas.', error);
+      if (active) setSavedMessage('Não consegui carregar o salvamento anterior. Você pode salvar novamente.');
+    });
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -83,25 +153,27 @@ function Shop() {
     return () => { document.body.style.overflow = previous; document.removeEventListener('keydown', escape); };
   }, [selected]);
 
-  const currentProducts: Product[] = initialProducts.map((product) => ({
-    ...product,
-    ...editableProducts.find((item) => item.id === product.id),
-  }));
+  const currentProducts: Product[] = initialProducts.map((product) => {
+    const editable = editableProducts.find((item) => item.id === product.id);
+    return { ...product, ...editable, image: editable?.image || product.image };
+  });
 
   function updateProduct(id: number, key: Exclude<keyof EditableProduct, 'id'>, value: string) {
     setEditableProducts((current) => current.map((product) => product.id === id ? { ...product, [key]: value } : product));
   }
 
-  function saveConfig() {
+  async function saveConfig() {
+    setSavedMessage('Salvando…');
     try {
-      localStorage.setItem('sales-page-builder-config', JSON.stringify({
+      await writeSavedConfig({
         shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle,
         aboutTitle, aboutCopy, heroColor, backgroundColor, products: editableProducts,
-      }));
-      setSavedMessage('Alterações salvas neste navegador.');
-      window.setTimeout(() => setSavedMessage(''), 3500);
-    } catch {
-      setSavedMessage('Não foi possível salvar neste navegador.');
+        savedAt: new Date().toISOString(),
+      });
+      setSavedMessage('Salvo! As alterações continuam neste navegador mesmo após fechar a página.');
+    } catch (error) {
+      console.error('Falha ao salvar configurações:', error);
+      setSavedMessage(error instanceof Error ? 'Erro ao salvar: ' + error.message : 'Não foi possível salvar. Tente outro navegador.');
     }
   }
 
@@ -116,9 +188,8 @@ function Shop() {
     setAboutCopy(defaults.aboutCopy);
     setHeroColor(defaults.heroColor);
     setBackgroundColor(defaults.backgroundColor);
-    setEditableProducts(initialProducts.map(({ id, name, subtitle, price, label, description }) => ({ id, name, subtitle, price, label, description })));
-    localStorage.removeItem('sales-page-builder-config');
-    setSavedMessage('Visual restaurado para o padrão.');
+    setEditableProducts(initialProducts.map(({ id, name, subtitle, price, label, description, image }) => ({ id, name, subtitle, price, label, description, image })));
+    removeSavedConfig().then(() => setSavedMessage('Visual restaurado para o padrão.')).catch((error) => setSavedMessage('Visual restaurado na tela, mas não consegui apagar o salvamento: ' + String(error)));
   }
 
   return <div className="shop-shell" style={{ '--hero': heroColor, '--background': backgroundColor } as CSSProperties}>
@@ -195,10 +266,13 @@ function Shop() {
               <label>Preço (R$)<input value={product.price} onChange={e => updateProduct(product.id, 'price', e.target.value)} /></label>
               <label>Etiqueta (opcional)<input value={product.label} onChange={e => updateProduct(product.id, 'label', e.target.value)} /></label>
               <label>Descrição do produto<textarea rows={3} value={product.description} onChange={e => updateProduct(product.id, 'description', e.target.value)} /></label>
+              <label>URL da imagem<input type="url" placeholder="https://exemplo.com/imagem.jpg" value={product.image.startsWith('data:') || product.image.startsWith('/assets/') ? '' : product.image} onChange={e => updateProduct(product.id, 'image', e.target.value)} /></label>
+              <label className="image-upload-label">Enviar imagem do computador<input type="file" accept="image/*" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { const dataUrl = await fileToDataUrl(file); updateProduct(product.id, 'image', dataUrl); setSavedMessage('Imagem carregada. Clique em Salvar para guardar a alteração.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } e.currentTarget.value = ''; }} /></label>
+              <img className="editor-image-preview" src={product.image} alt={'Prévia de ' + product.name} />
             </div>)}
           </fieldset>
         </div>
-        <div className="editor-footer"><div className="editor-status" role="status">{savedMessage || <><Eye size={14} /> A prévia muda enquanto você edita</>}</div><div className="flex gap-2"><Button variant="outline" onClick={resetConfig}><RotateCcw size={15} /> Restaurar</Button><Button onClick={saveConfig}><Save size={15} /> Salvar</Button></div></div>
+        <div className="editor-footer"><div className="editor-status" role="status">{savedMessage || <><Eye size={14} /> A prévia muda ao editar. Clique em Salvar para guardar.</>}</div><div className="flex gap-2"><Button variant="outline" onClick={resetConfig}><RotateCcw size={15} /> Restaurar</Button><Button onClick={saveConfig}><Save size={15} /> Salvar</Button></div></div>
       </section>
     </div>}
 
