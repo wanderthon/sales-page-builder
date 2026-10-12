@@ -163,3 +163,15 @@
 
 .image-upload-label input[type="file"] { width: 100%; min-width: 0; padding: 9px; border: 1px dashed var(--border); border-radius: 5px; background: var(--muted); color: var(--foreground); font-size: 11px; }
 .editor-image-preview { width: 100%; max-height: 210px; object-fit: contain; background: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
+
+
+/* Contatos, hero com imagem e textos auxiliares do editor */
+.contact-band { padding-block: 28px 12px; border-top: 1px solid var(--border); }
+.contact-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.contact-links a { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 5px; padding: 10px 13px; font-size: 13px; transition: background .2s, color .2s; }
+.contact-links a:hover { background: var(--foreground); color: var(--background); }
+.editor-help { color: var(--muted-foreground); font-size: 11px; line-height: 1.5; margin-top: -8px; }
+.has-hero-image .eyebrow, .has-hero-image .hero-copy { color: #fff; }
+.has-hero-image .hero-title { color: #fff; }
+.has-hero-image .hero-stamp { border-color: #fff; color: #fff; }
+.has-hero-image .hero-stamp span { color: #fff; }
