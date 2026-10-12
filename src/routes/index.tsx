@@ -18,11 +18,11 @@ export const Route = createFileRoute('/')({
 });
 
 const initialProducts = [
-  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '49,90', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
-  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
+  { id: 1, name: 'MODELOS DE CONTRATOS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '49,90', buyUrl: '', image: proposta, label: 'MAIS VENDIDO', description: 'Uma apresentação bem pensada para valorizar suas ideias. Um modelo de proposta comercial com espaço para o projeto, o processo e o investimento.' },
+  { id: 2, name: 'ROTEIROS DE BRIEFINGS', category: 'Modelos', subtitle: '8 MODELOS PRONTOS', price: '39,90', buyUrl: '', image: orcamento, label: '', description: 'O essencial, sem complicar. Um modelo de orçamento com uma estrutura clara para apresentar serviços, prazos e valores.' },
 ];
 type Product = typeof initialProducts[number];
-type EditableProduct = Pick<Product, 'id' | 'name' | 'subtitle' | 'price' | 'label' | 'description' | 'image'>;
+type EditableProduct = Pick<Product, 'id' | 'name' | 'subtitle' | 'price' | 'buyUrl' | 'label' | 'description' | 'image'>;
 
 const CONFIG_KEY = 'sales-page-builder-config';
 const DB_NAME = 'sales-page-builder';
@@ -115,7 +115,27 @@ const defaults = {
   aboutCopy: 'Uma coleção de recursos que simplificam o começo e deixam o resto com você. Porque cada projeto tem uma história, e a próxima pode ser a sua.',
   heroColor: '#f4e85b',
   backgroundColor: '#fbfaf6',
+  logoDot: '.',
+  logoDotColor: '#777777',
+  heroImage: '',
+  phone: '',
+  instagram: '',
 };
+
+const defaultMicrocopy = {
+  navAbout: 'Sobre', navFaq: 'Dúvidas', navStore: 'A loja', heroButton: 'Explore a coleção',
+  tickerOne: 'ARQUIVOS PARA BOAS IDEIAS', tickerTwo: 'CRIE DO SEU JEITO',
+  stampTop: 'feito para', stampBottom: 'criar mais', collectionCta: 'Compre aqui',
+  aboutEyebrow: 'MENOS COMPLICAÇÃO, MAIS CRIAÇÃO', faqEyebrow: 'VALE SABER', faqTitle: 'Alguma dúvida?',
+  footerTagline: 'Feito para criar.', footerBack: 'Voltar à coleção', contactTitle: 'Vamos conversar?',
+  phoneLabel: 'Telefone / WhatsApp', instagramLabel: 'Instagram',
+};
+
+const defaultFaqs = [
+  { question: 'O que encontro na coleção?', answer: 'Modelos de documentos e guias para projetos criativos. Explore cada produto para conhecer a proposta.' },
+  { question: 'Posso personalizar os materiais?', answer: 'A proposta dos modelos é servir como ponto de partida para sua identidade, seus textos e suas ideias.' },
+  { question: 'Onde vejo os detalhes de cada produto?', answer: 'Os detalhes estão disponíveis na apresentação de cada item da coleção.' },
+];
 
 function Shop() {
   const [selected, setSelected] = useState<Product | null>(null);
@@ -131,7 +151,14 @@ function Shop() {
   const [aboutCopy, setAboutCopy] = useState(defaults.aboutCopy);
   const [heroColor, setHeroColor] = useState(defaults.heroColor);
   const [backgroundColor, setBackgroundColor] = useState(defaults.backgroundColor);
-  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, subtitle, price, label, description, image }) => ({ id, name, subtitle, price, label, description, image })));
+  const [logoDot, setLogoDot] = useState(defaults.logoDot);
+  const [logoDotColor, setLogoDotColor] = useState(defaults.logoDotColor);
+  const [heroImage, setHeroImage] = useState(defaults.heroImage);
+  const [phone, setPhone] = useState(defaults.phone);
+  const [instagram, setInstagram] = useState(defaults.instagram);
+  const [microcopy, setMicrocopy] = useState(defaultMicrocopy);
+  const [faqs, setFaqs] = useState(defaultFaqs);
+  const [editableProducts, setEditableProducts] = useState<EditableProduct[]>(initialProducts.map(({ id, name, subtitle, price, buyUrl, label, description, image }) => ({ id, name, subtitle, price, buyUrl, label, description, image })));
 
   useEffect(() => {
     let active = true;
@@ -147,6 +174,13 @@ function Shop() {
       setAboutCopy(config.aboutCopy ?? defaults.aboutCopy);
       setHeroColor(config.heroColor ?? defaults.heroColor);
       setBackgroundColor(config.backgroundColor ?? defaults.backgroundColor);
+      setLogoDot(config.logoDot ?? defaults.logoDot);
+      setLogoDotColor(config.logoDotColor ?? defaults.logoDotColor);
+      setHeroImage(config.heroImage ?? defaults.heroImage);
+      setPhone(config.phone ?? defaults.phone);
+      setInstagram(config.instagram ?? defaults.instagram);
+      setMicrocopy({ ...defaultMicrocopy, ...(config.microcopy ?? {}) });
+      setFaqs(Array.isArray(config.faqs) ? config.faqs : defaultFaqs);
       if (Array.isArray(config.products)) {
         setEditableProducts(initialProducts.map((base) => ({ ...base, ...config.products.find((item: EditableProduct) => item.id === base.id) })));
       }
@@ -175,12 +209,21 @@ function Shop() {
     setEditableProducts((current) => current.map((product) => product.id === id ? { ...product, [key]: value } : product));
   }
 
+  function updateFaq(index: number, key: 'question' | 'answer', value: string) {
+    setFaqs((current) => current.map((faq, i) => i === index ? { ...faq, [key]: value } : faq));
+  }
+
+  function updateMicrocopy(key: keyof typeof defaultMicrocopy, value: string) {
+    setMicrocopy((current) => ({ ...current, [key]: value }));
+  }
+
   async function saveConfig() {
     setSavedMessage('Salvando…');
     try {
       await writeSavedConfig({
         shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle,
-        aboutTitle, aboutCopy, heroColor, backgroundColor, products: editableProducts,
+        aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage,
+        phone, instagram, microcopy, faqs, products: editableProducts,
         savedAt: new Date().toISOString(),
       });
       setSavedMessage('Salvo! As alterações continuam neste navegador mesmo após fechar a página.');
@@ -201,33 +244,40 @@ function Shop() {
     setAboutCopy(defaults.aboutCopy);
     setHeroColor(defaults.heroColor);
     setBackgroundColor(defaults.backgroundColor);
-    setEditableProducts(initialProducts.map(({ id, name, subtitle, price, label, description, image }) => ({ id, name, subtitle, price, label, description, image })));
+    setLogoDot(defaults.logoDot);
+    setLogoDotColor(defaults.logoDotColor);
+    setHeroImage(defaults.heroImage);
+    setPhone(defaults.phone);
+    setInstagram(defaults.instagram);
+    setMicrocopy(defaultMicrocopy);
+    setFaqs(defaultFaqs);
+    setEditableProducts(initialProducts.map(({ id, name, subtitle, price, buyUrl, label, description, image }) => ({ id, name, subtitle, price, buyUrl, label, description, image })));
     removeSavedConfig().then(() => setSavedMessage('Visual restaurado para o padrão.')).catch((error) => setSavedMessage('Visual restaurado na tela, mas não consegui apagar o salvamento: ' + String(error)));
   }
 
   return <div className="shop-shell" style={{ '--hero': heroColor, '--background': backgroundColor } as CSSProperties}>
     <header className="site-header page-width">
-      <a href="#" className="brand" aria-label={shopName + ', início'}>{shopName}<span className="text-muted-foreground">.</span></a>
+      <a href="#" className="brand" aria-label={shopName + ', início'}>{shopName}<span style={{ color: logoDotColor }}>{logoDot}</span></a>
       <nav className="flex items-center gap-3 sm:gap-7" aria-label="Navegação principal">
-        <a className="nav-link hidden sm:block" href="#sobre">Sobre</a>
-        <a className="nav-link hidden sm:block" href="#duvidas">Dúvidas</a>
+        <a className="nav-link hidden sm:block" href="#sobre">{microcopy.navAbout}</a>
+        <a className="nav-link hidden sm:block" href="#duvidas">{microcopy.navFaq}</a>
         <Button variant="outline" size="sm" onClick={() => setEditorOpen(true)}><Settings2 size={15} /> Editar loja</Button>
-        <Button variant="outline" size="sm" asChild><a href="#colecao">A loja <ArrowUpRight /></a></Button>
+        <Button variant="outline" size="sm" asChild><a href="#colecao">{microcopy.navStore} <ArrowUpRight /></a></Button>
       </nav>
     </header>
     <main>
-      <section className="hero">
+      <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.32), rgba(0,0,0,.12)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
         <div className="hero-inner page-width">
           <p className="eyebrow flex items-center gap-2"><Asterisk size={15} /> {eyebrow}</p>
-          <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>
-          <div className="hero-stamp" aria-hidden="true">feito para<span>✳</span>criar mais</div>
+          <h1 className="hero-title">{headline}<span style={{ color: logoDotColor }}>{logoDot}</span></h1>
+          <div className="hero-stamp" aria-hidden="true">{microcopy.stampTop}<span>✳</span>{microcopy.stampBottom}</div>
           <div className="hero-bottom">
             <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
-            <Button variant="shop" size="lg" asChild><a href="#colecao">Explore a coleção <ArrowDown /></a></Button>
+            <Button variant="shop" size="lg" asChild><a href="#colecao">{microcopy.heroButton} <ArrowDown /></a></Button>
           </div>
         </div>
       </section>
-      <div className="ticker" aria-hidden="true"><div className="ticker-track">{Array.from({ length: 10 }, (_, i) => <span className="flex items-center gap-9" key={i}>ARQUIVOS PARA BOAS IDEIAS <span className="ticker-star">✳</span> CRIE DO SEU JEITO <span className="ticker-star">✳</span></span>)}</div></div>
+      <div className="ticker" aria-hidden="true"><div className="ticker-track">{Array.from({ length: 10 }, (_, i) => <span className="flex items-center gap-9" key={i}>{microcopy.tickerOne} <span className="ticker-star">✳</span> {microcopy.tickerTwo} <span className="ticker-star">✳</span></span>)}</div></div>
       <section id="colecao" className="collection page-width">
         <div className="collection-top">
           <div><p className="eyebrow text-muted-foreground mb-3">{collectionEyebrow}</p><h2 className="section-title">{collectionTitle}<span className="text-muted-foreground text-sm font-sans ml-3">/ {String(currentProducts.length).padStart(2, '0')}</span></h2></div>
@@ -239,17 +289,14 @@ function Shop() {
           </a>
           <p className="product-category">{product.subtitle}</p>
           <h3 className="product-name">{product.name}</h3>
-          <div className="product-bottom"><p className="font-medium text-sm">R$ {product.price}</p><Button variant="product" size="sm" onClick={() => setSelected(product)}>Ver produto <ArrowUpRight /></Button></div>
+          <div className="product-bottom"><Button variant="product" size="sm" asChild><a href={product.buyUrl || '#produto-' + product.id} target={product.buyUrl ? '_blank' : undefined} rel={product.buyUrl ? 'noreferrer' : undefined}>{microcopy.collectionCta} <ArrowUpRight /></a></Button><Button variant="ghost" size="sm" onClick={() => setSelected(product)}>Detalhes <ArrowUpRight /></Button></div>
         </article>)}</div>
       </section>
-      <section id="sobre" className="about-band"><div className="about-inner page-width"><div><p className="eyebrow text-muted-foreground mb-3">MENOS COMPLICAÇÃO, MAIS CRIAÇÃO</p><h2 className="section-title">{aboutTitle}</h2></div><p className="text-muted-foreground text-sm leading-7">{aboutCopy}</p></div></section>
-      <section id="duvidas" className="faq page-width"><div><p className="eyebrow text-muted-foreground mb-3">VALE SABER</p><h2 className="section-title">Alguma dúvida?</h2></div><div>{[
-        ['O que encontro na coleção?', 'Modelos de documentos e guias para projetos criativos. Explore cada produto para conhecer a proposta.'],
-        ['Posso personalizar os materiais?', 'A proposta dos modelos é servir como ponto de partida para sua identidade, seus textos e suas ideias.'],
-        ['Onde vejo os detalhes de cada produto?', 'Os detalhes estão disponíveis na apresentação de cada item da coleção.'],
-      ].map(([question, answer]) => <details key={question}><summary>{question}<Plus size={16} className="shrink-0" /></summary><p>{answer}</p></details>)}</div></section>
+      <section id="sobre" className="about-band"><div className="about-inner page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.aboutEyebrow}</p><h2 className="section-title">{aboutTitle}</h2></div><p className="text-muted-foreground text-sm leading-7">{aboutCopy}</p></div></section>
+      <section id="duvidas" className="faq page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.faqEyebrow}</p><h2 className="section-title">{microcopy.faqTitle}</h2></div><div>{faqs.map((faq, index) => <details key={index}><summary>{faq.question}<Plus size={16} className="shrink-0" /></summary><p>{faq.answer}</p></details>)}</div></section>
     </main>
-    <footer className="footer page-width"><a href="#" className="brand">{shopName}.</a><p className="text-xs text-muted-foreground">© 2026 {shopName}. Feito para criar.</p><a href="#colecao" className="nav-link flex items-center gap-2">Voltar à coleção <ArrowUpRight size={15} /></a></footer>
+    <section className="contact-band page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.contactTitle}</p><div className="contact-links">{phone && <a href={'https://wa.me/' + phone.replace(/\D/g, '')} target="_blank" rel="noreferrer">{microcopy.phoneLabel} <ArrowUpRight size={15} /></a>}{instagram && <a href={instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace(/^@/, '')} target="_blank" rel="noreferrer">{microcopy.instagramLabel} <ArrowUpRight size={15} /></a>}</div></div></section>
+    <footer className="footer page-width"><a href="#" className="brand">{shopName}<span style={{ color: logoDotColor }}>{logoDot}</span></a><p className="text-xs text-muted-foreground">© 2026 {shopName}. {microcopy.footerTagline}</p><a href="#colecao" className="nav-link flex items-center gap-2">{microcopy.footerBack} <ArrowUpRight size={15} /></a></footer>
 
     {editorOpen && <div className="editor-overlay" onClick={() => setEditorOpen(false)}>
       <section className="editor-panel" role="dialog" aria-modal="true" aria-labelledby="editor-title" onClick={event => event.stopPropagation()}>
@@ -267,16 +314,34 @@ function Shop() {
             <label>Título da seção “Sobre”<input value={aboutTitle} onChange={e => setAboutTitle(e.target.value)} /></label>
             <label>Texto da seção “Sobre”<textarea rows={3} value={aboutCopy} onChange={e => setAboutCopy(e.target.value)} /></label>
           </fieldset>
-          <fieldset className="editor-group"><legend>Cores</legend>
-            <label className="color-field">Fundo do destaque <input type="color" value={heroColor} onChange={e => setHeroColor(e.target.value)} /><span>{heroColor}</span></label>
+          <fieldset className="editor-group"><legend>Logo, cores e imagem de destaque</legend>
+            <label>Pontinho da logo<input value={logoDot} onChange={e => setLogoDot(e.target.value)} maxLength={4} /></label>
+            <label className="color-field">Cor do pontinho <input type="color" value={logoDotColor} onChange={e => setLogoDotColor(e.target.value)} /><span>{logoDotColor}</span></label>
+            <label className="color-field">Cor de fundo (sem foto) <input type="color" value={heroColor} onChange={e => setHeroColor(e.target.value)} /><span>{heroColor}</span></label>
             <label className="color-field">Fundo da página <input type="color" value={backgroundColor} onChange={e => setBackgroundColor(e.target.value)} /><span>{backgroundColor}</span></label>
+            <label>URL da imagem de destaque<input type="url" placeholder="https://exemplo.com/foto.jpg" value={heroImage.startsWith('data:') ? '' : heroImage} onChange={e => setHeroImage(e.target.value)} /></label>
+            <label className="image-upload-label">Enviar foto do computador<input type="file" accept="image/*" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { setHeroImage(await fileToDataUrl(file)); setSavedMessage('Foto de destaque carregada. Clique em Salvar para guardar.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } e.currentTarget.value = ''; }} /></label>
+            {heroImage && <><img className="editor-image-preview" src={heroImage} alt="Prévia da imagem de destaque" /><Button variant="outline" size="sm" onClick={() => setHeroImage('')}>Remover foto de destaque</Button></>}
+          </fieldset>
+          <fieldset className="editor-group"><legend>Contatos</legend>
+            <label>Telefone com DDD<input value={phone} onChange={e => setPhone(e.target.value)} placeholder="5561999999999" /></label>
+            <p className="editor-help">O número será usado no link do WhatsApp, incluindo código do país e DDD (ex.: 5561...).</p>
+            <label>Perfil ou URL do Instagram<input value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@seuperfil ou https://instagram.com/seuperfil" /></label>
+          </fieldset>
+          <fieldset className="editor-group"><legend>Textos menores do site</legend>
+            {(Object.keys(defaultMicrocopy) as Array<keyof typeof defaultMicrocopy>).map(key => <label key={key}>{({ navAbout: 'Link Sobre', navFaq: 'Link Dúvidas', navStore: 'Botão A loja', heroButton: 'Botão do destaque', tickerOne: 'Faixa animada: primeira frase', tickerTwo: 'Faixa animada: segunda frase', stampTop: 'Selo redondo: frase superior', stampBottom: 'Selo redondo: frase inferior', collectionCta: 'Botão de compra', aboutEyebrow: 'Chamada da seção Sobre', faqEyebrow: 'Chamada das dúvidas', faqTitle: 'Título das dúvidas', footerTagline: 'Frase do rodapé', footerBack: 'Link do rodapé', contactTitle: 'Título dos contatos', phoneLabel: 'Rótulo do telefone', instagramLabel: 'Rótulo do Instagram' } as Record<keyof typeof defaultMicrocopy, string>)[key]}<input value={microcopy[key]} onChange={e => updateMicrocopy(key, e.target.value)} /></label>)}
+          </fieldset>
+          <fieldset className="editor-group"><legend>Dúvidas frequentes</legend>
+            {faqs.map((faq, index) => <div className="editor-product" key={index}><h3>Pergunta {index + 1}</h3><label>Pergunta<input value={faq.question} onChange={e => updateFaq(index, 'question', e.target.value)} /></label><label>Resposta<textarea rows={3} value={faq.answer} onChange={e => updateFaq(index, 'answer', e.target.value)} /></label><Button variant="outline" size="sm" onClick={() => setFaqs(current => current.filter((_, i) => i !== index))}>Remover pergunta</Button></div>)}
+            <Button variant="outline" onClick={() => setFaqs(current => [...current, { question: 'Nova pergunta', answer: 'Escreva a resposta aqui.' }])}><Plus size={15} /> Adicionar pergunta</Button>
           </fieldset>
           <fieldset className="editor-group"><legend>Produtos</legend>
             {editableProducts.map((product, index) => <div className="editor-product" key={product.id}>
               <h3>Produto {index + 1}</h3>
               <label>Nome<input value={product.name} onChange={e => updateProduct(product.id, 'name', e.target.value)} /></label>
               <label>Subtítulo<input value={product.subtitle} onChange={e => updateProduct(product.id, 'subtitle', e.target.value)} /></label>
-              <label>Preço (R$)<input value={product.price} onChange={e => updateProduct(product.id, 'price', e.target.value)} /></label>
+              <label>Preço (R$), opcional<input value={product.price} onChange={e => updateProduct(product.id, 'price', e.target.value)} /></label>
+              <label>Link do botão “Compre aqui”<input type="url" placeholder="https://checkout..." value={product.buyUrl} onChange={e => updateProduct(product.id, 'buyUrl', e.target.value)} /></label>
               <label>Etiqueta (opcional)<input value={product.label} onChange={e => updateProduct(product.id, 'label', e.target.value)} /></label>
               <label>Descrição do produto<textarea rows={3} value={product.description} onChange={e => updateProduct(product.id, 'description', e.target.value)} /></label>
               <label>URL da imagem<input type="url" placeholder="https://exemplo.com/imagem.jpg" value={product.image.startsWith('data:') || product.image.startsWith('/assets/') ? '' : product.image} onChange={e => updateProduct(product.id, 'image', e.target.value)} /></label>
@@ -289,6 +354,6 @@ function Shop() {
       </section>
     </div>}
 
-    {selected && <div className="detail-overlay" onClick={() => setSelected(null)}><section className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-title" onClick={event => event.stopPropagation()}><img src={selected.image} alt={selected.name} width={1024} height={1024} className="w-full rounded-md object-cover" /><div className="pt-8"><Button autoFocus variant="ghost" size="icon" aria-label="Fechar produto" className="absolute top-2 right-2" onClick={() => setSelected(null)}><X /></Button><p className="eyebrow text-muted-foreground">{selected.category}</p><h2 id="product-title" className="section-title mt-4">{selected.name}</h2><p className="text-sm text-muted-foreground leading-7 my-5">{selected.description}</p><p className="text-xl font-medium">R$ {selected.price}</p><p className="text-xs text-muted-foreground mt-5">Produto e preço ilustrativos.</p></div></section></div>}
+    {selected && <div className="detail-overlay" onClick={() => setSelected(null)}><section className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-title" onClick={event => event.stopPropagation()}><img src={selected.image} alt={selected.name} width={1024} height={1024} className="w-full rounded-md object-cover" /><div className="pt-8"><Button autoFocus variant="ghost" size="icon" aria-label="Fechar produto" className="absolute top-2 right-2" onClick={() => setSelected(null)}><X /></Button><p className="eyebrow text-muted-foreground">{selected.category}</p><h2 id="product-title" className="section-title mt-4">{selected.name}</h2><p className="text-sm text-muted-foreground leading-7 my-5">{selected.description}</p><p className="text-xs text-muted-foreground mt-5">O preço pode ser informado na página de compra.</p><Button variant="shop" size="lg" className="mt-4" asChild><a href={selected.buyUrl || '#colecao'} target={selected.buyUrl ? '_blank' : undefined} rel={selected.buyUrl ? 'noreferrer' : undefined}>{microcopy.collectionCta} <ArrowUpRight /></a></Button></div></section></div>}
   </div>;
 }
