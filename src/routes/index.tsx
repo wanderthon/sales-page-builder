@@ -188,7 +188,7 @@ function Shop() {
       setBackgroundColor(config.backgroundColor ?? defaults.backgroundColor);
       setLogoDot(config.logoDot ?? defaults.logoDot);
       setLogoDotColor(config.logoDotColor ?? defaults.logoDotColor);
-      setHeroImage(config.heroImage ?? defaults.heroImage);
+      setHeroImage(config.heroImage || defaults.heroImage);
       setContactLink(config.contactLink ?? '');
       setInstagram(config.instagram ?? defaults.instagram);
       setMicrocopy({ ...defaultMicrocopy, ...(config.microcopy ?? {}) });
@@ -346,7 +346,7 @@ function Shop() {
             <label className="color-field">Fundo da página <input type="color" value={backgroundColor} onChange={e => setBackgroundColor(e.target.value)} /><span>{backgroundColor}</span></label>
             <label>URL da imagem de destaque<input type="url" placeholder="https://exemplo.com/foto.jpg" value={heroImage.startsWith('data:') ? '' : heroImage} onChange={e => setHeroImage(e.target.value)} /></label>
             <label className="image-upload-label">Enviar foto do computador<input type="file" accept="image/*" onChange={async e => { const input = e.currentTarget; const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { setHeroImage(await fileToDataUrl(file)); setSavedMessage('Foto de destaque carregada. Clique em Salvar para guardar.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } input.value = ''; }} /></label>
-            {heroImage && <><img className="editor-image-preview" src={heroImage} alt="Prévia da imagem de destaque" /><Button variant="outline" size="sm" onClick={() => setHeroImage('')}>Remover foto de destaque</Button></>}
+            {heroImage && <><img className="editor-image-preview" src={heroImage} alt="Prévia da imagem de destaque" /><Button variant="outline" size="sm" onClick={() => setHeroImage(defaults.heroImage)}>Voltar à imagem padrão</Button></>}
           </fieldset>
           <fieldset className="editor-group"><legend>Contatos</legend>
             <label>Link para conversa no privado<input type="url" value={contactLink} onChange={e => setContactLink(e.target.value)} placeholder="https://wa.me/... ou link de mensagem" /></label>
