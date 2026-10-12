@@ -57,9 +57,9 @@
   .nav-link { font-size: 13px; transition: opacity .2s; }
   .nav-link:hover { opacity: .6; }
   .hero { background: var(--hero); overflow: hidden; min-height: 320px; }
-  .hero.has-hero-image { min-height: 0; aspect-ratio: 1800 / 800; }
+  .hero.has-hero-image { min-height: 0; aspect-ratio: 1800 / 800; display: flex; }
   .hero-inner { position: relative; min-height: 320px; padding-block: 48px 55px; box-sizing: border-box; }
-  .hero.has-hero-image .hero-inner { min-height: 0; padding-block: 0; }
+  .hero.has-hero-image .hero-inner { min-height: 0; padding-block: 0; flex: 1; }
   .hero-bottom { position: absolute; right: 0; bottom: 20px; left: 0; display: flex; justify-content: flex-end; }
   .hero.has-hero-image .hero-bottom { bottom: 14px; }
   .hero.has-hero-image .hero-bottom a { min-height: 34px; height: 34px; padding-inline: 12px; font-size: 12px; }
