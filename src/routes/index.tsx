@@ -247,7 +247,7 @@ function Shop() {
       await writeSavedConfig({
         shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle,
         aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage,
-        phone, instagram, microcopy, faqs, products: editableProducts,
+        contactLink, instagram, microcopy, faqs, products: editableProducts,
         savedAt: new Date().toISOString(),
       });
       setSavedMessage('Salvo! As alterações continuam neste navegador mesmo após fechar a página.');
