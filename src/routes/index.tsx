@@ -285,7 +285,6 @@ function Shop() {
       <nav className="flex items-center gap-3 sm:gap-7" aria-label="Navegação principal">
         <a className="nav-link hidden sm:block" href="#sobre">{microcopy.navAbout}</a>
         <a className="nav-link hidden sm:block" href="#duvidas">{microcopy.navFaq}</a>
-        <Button variant="outline" size="sm" onClick={() => setEditorOpen(true)}><Settings2 size={15} /> Editar loja</Button>
         <Button variant="outline" size="sm" asChild><a href="#colecao">{microcopy.navStore} <ArrowUpRight /></a></Button>
       </nav>
     </header>
