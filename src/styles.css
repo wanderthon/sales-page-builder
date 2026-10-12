@@ -108,10 +108,10 @@
   .page-width { width: calc(100% - 36px); }
   .site-header { height: 76px; }
   .brand { font-size: 22px; }
-  .hero-inner { padding-block: 35px 36px; }
+  .hero { min-height: 260px; }
+  .hero-inner { min-height: 260px; }
   .hero.has-hero-image { min-height: 360px; }
-  .hero.has-hero-image .hero-inner { min-height: 360px; }
-  .hero-bottom { bottom: 14px; }
+  .hero.has-hero-image .hero-bottom a { min-height: 32px; height: 32px; padding-inline: 10px; font-size: 11px; }
   .hero-stamp { display: none; }
   .hero { min-height: 260px; }
   .hero-inner { min-height: 260px; }
