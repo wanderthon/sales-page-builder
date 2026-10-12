@@ -160,3 +160,6 @@
   .editor-footer button { flex: 1; }
 }
 @media(prefers-reduced-motion:reduce) { .editor-panel { animation: none; } }
+
+.image-upload-label input[type="file"] { width: 100%; min-width: 0; padding: 9px; border: 1px dashed var(--border); border-radius: 5px; background: var(--muted); color: var(--foreground); font-size: 11px; }
+.editor-image-preview { width: 100%; max-height: 210px; object-fit: contain; background: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
