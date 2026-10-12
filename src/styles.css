@@ -112,6 +112,7 @@
   .hero { min-height: 260px; }
   .hero-inner { min-height: 260px; }
   .hero.has-hero-image { min-height: 0; }
+  .hero.has-hero-image .hero-inner { min-height: 0; padding-block: 0; }
   .hero.has-hero-image .hero-bottom a { min-height: 32px; height: 32px; padding-inline: 10px; font-size: 11px; }
   .hero-stamp { display: none; }
   .collection { padding-block: 38px 42px; }
