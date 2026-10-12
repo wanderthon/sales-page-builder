@@ -142,6 +142,7 @@ function Shop() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [configLoaded, setConfigLoaded] = useState(false);
   const [shopName, setShopName] = useState(defaults.shopName);
   const [eyebrow, setEyebrow] = useState(defaults.eyebrow);
   const [headline, setHeadline] = useState(defaults.headline);
@@ -164,7 +165,8 @@ function Shop() {
   useEffect(() => {
     let active = true;
     readSavedConfig().then((config) => {
-      if (!active || !config) return;
+      if (!active) return;
+      if (!config) { setConfigLoaded(true); return; }
       setShopName(config.shopName ?? defaults.shopName);
       setEyebrow(config.eyebrow ?? defaults.eyebrow);
       setHeadline(config.headline ?? defaults.headline);
@@ -185,12 +187,33 @@ function Shop() {
       if (Array.isArray(config.products)) {
         setEditableProducts(initialProducts.map((base) => ({ ...base, ...config.products.find((item: EditableProduct) => item.id === base.id) })));
       }
+      setConfigLoaded(true);
     }).catch((error) => {
       console.error('Não foi possível carregar as alterações salvas.', error);
       if (active) setSavedMessage('Não consegui carregar o salvamento anterior. Você pode salvar novamente.');
     });
     return () => { active = false; };
   }, []);
+
+  // Salvamento automático: evita perder alterações se a pessoa esquecer de clicar em Salvar.
+  useEffect(() => {
+    if (!configLoaded) return;
+    const config = {
+      shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle,
+      aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage,
+      phone, instagram, microcopy, faqs, products: editableProducts,
+      savedAt: new Date().toISOString(),
+    };
+    const timeout = window.setTimeout(() => {
+      writeSavedConfig(config).then(() => {
+        setSavedMessage('Salvo automaticamente neste navegador.');
+      }).catch((error) => {
+        console.error('Falha no salvamento automático:', error);
+        setSavedMessage(error instanceof Error ? 'Falha no salvamento automático: ' + error.message : 'Falha no salvamento automático. Clique em Salvar para tentar novamente.');
+      });
+    }, 700);
+    return () => window.clearTimeout(timeout);
+  }, [configLoaded, shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle, aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage, phone, instagram, microcopy, faqs, editableProducts]);
 
   useEffect(() => {
     if (!selected) return;
