@@ -128,7 +128,7 @@ const defaultMicrocopy = {
   stampTop: 'feito para', stampBottom: 'criar mais', collectionCta: 'Compre aqui',
   aboutEyebrow: 'MENOS COMPLICAÇÃO, MAIS CRIAÇÃO', faqEyebrow: 'VALE SABER', faqTitle: 'Alguma dúvida?',
   footerTagline: 'Feito para criar.', footerBack: 'Voltar à coleção', contactTitle: 'Vamos conversar?',
-  phoneLabel: 'Telefone / WhatsApp', instagramLabel: 'Instagram',
+  phoneLabel: 'Telefone', whatsappLabel: 'WhatsApp', instagramLabel: 'Instagram',
 };
 
 const defaultFaqs = [
@@ -251,7 +251,7 @@ function Shop() {
     setInstagram(defaults.instagram);
     setMicrocopy(defaultMicrocopy);
     setFaqs(defaultFaqs);
-    setEditableProducts(initialProducts.map(({ id, name, subtitle, price, buyUrl, label, description, image }) => ({ id, name, subtitle, price, buyUrl, label, description, image })));
+    setEditableProducts(initialProducts.map(({ id, name, category, subtitle, price, buyUrl, label, description, image }) => ({ id, name, category, subtitle, price, buyUrl, label, description, image })));
     removeSavedConfig().then(() => setSavedMessage('Visual restaurado para o padrão.')).catch((error) => setSavedMessage('Visual restaurado na tela, mas não consegui apagar o salvamento: ' + String(error)));
   }
 
@@ -295,7 +295,7 @@ function Shop() {
       <section id="sobre" className="about-band"><div className="about-inner page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.aboutEyebrow}</p><h2 className="section-title">{aboutTitle}</h2></div><p className="text-muted-foreground text-sm leading-7">{aboutCopy}</p></div></section>
       <section id="duvidas" className="faq page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.faqEyebrow}</p><h2 className="section-title">{microcopy.faqTitle}</h2></div><div>{faqs.map((faq, index) => <details key={index}><summary>{faq.question}<Plus size={16} className="shrink-0" /></summary><p>{faq.answer}</p></details>)}</div></section>
     </main>
-    <section className="contact-band page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.contactTitle}</p><div className="contact-links">{phone && <a href={'https://wa.me/' + phone.replace(/\D/g, '')} target="_blank" rel="noreferrer">{microcopy.phoneLabel} <ArrowUpRight size={15} /></a>}{instagram && <a href={instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace(/^@/, '')} target="_blank" rel="noreferrer">{microcopy.instagramLabel} <ArrowUpRight size={15} /></a>}</div></div></section>
+    <section className="contact-band page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.contactTitle}</p><div className="contact-links">{phone && <><a href={'tel:+' + phone.replace(/\D/g, '')}>{microcopy.phoneLabel} <ArrowUpRight size={15} /></a><a href={'https://wa.me/' + phone.replace(/\D/g, '')} target="_blank" rel="noreferrer">{microcopy.whatsappLabel} <ArrowUpRight size={15} /></a></>}{instagram && <a href={instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace(/^@/, '')} target="_blank" rel="noreferrer">{microcopy.instagramLabel} <ArrowUpRight size={15} /></a>}</div></div></section>
     <footer className="footer page-width"><a href="#" className="brand">{shopName}<span style={{ color: logoDotColor }}>{logoDot}</span></a><p className="text-xs text-muted-foreground">© 2026 {shopName}. {microcopy.footerTagline}</p><a href="#colecao" className="nav-link flex items-center gap-2">{microcopy.footerBack} <ArrowUpRight size={15} /></a></footer>
 
     {editorOpen && <div className="editor-overlay" onClick={() => setEditorOpen(false)}>
@@ -329,7 +329,7 @@ function Shop() {
             <label>Perfil ou URL do Instagram<input value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@seuperfil ou https://instagram.com/seuperfil" /></label>
           </fieldset>
           <fieldset className="editor-group"><legend>Textos menores do site</legend>
-            {(Object.keys(defaultMicrocopy) as Array<keyof typeof defaultMicrocopy>).map(key => <label key={key}>{({ navAbout: 'Link Sobre', navFaq: 'Link Dúvidas', navStore: 'Botão A loja', heroButton: 'Botão do destaque', tickerOne: 'Faixa animada: primeira frase', tickerTwo: 'Faixa animada: segunda frase', stampTop: 'Selo redondo: frase superior', stampBottom: 'Selo redondo: frase inferior', collectionCta: 'Botão de compra', aboutEyebrow: 'Chamada da seção Sobre', faqEyebrow: 'Chamada das dúvidas', faqTitle: 'Título das dúvidas', footerTagline: 'Frase do rodapé', footerBack: 'Link do rodapé', contactTitle: 'Título dos contatos', phoneLabel: 'Rótulo do telefone', instagramLabel: 'Rótulo do Instagram' } as Record<keyof typeof defaultMicrocopy, string>)[key]}<input value={microcopy[key]} onChange={e => updateMicrocopy(key, e.target.value)} /></label>)}
+            {(Object.keys(defaultMicrocopy) as Array<keyof typeof defaultMicrocopy>).map(key => <label key={key}>{({ navAbout: 'Link Sobre', navFaq: 'Link Dúvidas', navStore: 'Botão A loja', heroButton: 'Botão do destaque', tickerOne: 'Faixa animada: primeira frase', tickerTwo: 'Faixa animada: segunda frase', stampTop: 'Selo redondo: frase superior', stampBottom: 'Selo redondo: frase inferior', collectionCta: 'Botão de compra', aboutEyebrow: 'Chamada da seção Sobre', faqEyebrow: 'Chamada das dúvidas', faqTitle: 'Título das dúvidas', footerTagline: 'Frase do rodapé', footerBack: 'Link do rodapé', contactTitle: 'Título dos contatos', phoneLabel: 'Rótulo do telefone', whatsappLabel: 'Rótulo do WhatsApp', instagramLabel: 'Rótulo do Instagram' } as Record<keyof typeof defaultMicrocopy, string>)[key]}<input value={microcopy[key]} onChange={e => updateMicrocopy(key, e.target.value)} /></label>)}
           </fieldset>
           <fieldset className="editor-group"><legend>Dúvidas frequentes</legend>
             {faqs.map((faq, index) => <div className="editor-product" key={index}><h3>Pergunta {index + 1}</h3><label>Pergunta<input value={faq.question} onChange={e => updateFaq(index, 'question', e.target.value)} /></label><label>Resposta<textarea rows={3} value={faq.answer} onChange={e => updateFaq(index, 'answer', e.target.value)} /></label><Button variant="outline" size="sm" onClick={() => setFaqs(current => current.filter((_, i) => i !== index))}>Remover pergunta</Button></div>)}
