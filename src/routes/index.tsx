@@ -67,7 +67,6 @@ async function writeSavedConfig(config: unknown): Promise<void> {
         transaction.onerror = () => reject(transaction.error ?? new Error('Falha ao gravar as alterações.'));
         transaction.onabort = () => reject(transaction.error ?? new Error('O navegador cancelou a gravação.'));
       });
-      window.localStorage.removeItem(CONFIG_KEY);
       return;
     } finally { db.close(); }
   } catch (error) {
