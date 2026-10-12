@@ -186,3 +186,6 @@
 .has-hero-image .hero-title { color: #fff; }
 .has-hero-image .hero-stamp { border-color: #fff; color: #fff; }
 .has-hero-image .hero-stamp span { color: #fff; }
+
+.contact-copy { max-width: 520px; font-size: 14px; line-height: 1.7; color: var(--muted-foreground); margin: 0 0 16px; }
+.contact-note { margin-top: 12px; font-size: 12px; line-height: 1.6; color: var(--muted-foreground); }
