@@ -11,10 +11,10 @@ const asset = (name: string): string | undefined => assetUrls['/src/assets/' + n
 
 export const Route = createFileRoute('/')({
   head: () => ({ meta: [
-    { title: 'Seu estúdio — Loja criativa' },
-    { name: 'description', content: 'Uma coleção de modelos e guias para dar espaço às suas boas ideias.' },
-    { property: 'og:title', content: 'Seu estúdio — Loja criativa' },
-    { property: 'og:description', content: 'Modelos, guias e novas possibilidades para sua rotina criativa.' },
+    { title: 'WANDERTHON.art — Modelos de contratos e briefings' },
+    { name: 'description', content: 'Modelos de contratos e roteiros de briefing prontos para designers.' },
+    { property: 'og:title', content: 'WANDERTHON.art — Modelos de contratos e briefings' },
+    { property: 'og:description', content: 'Modelos de contratos e roteiros de briefing prontos para designers.' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
   ] }),
@@ -147,6 +147,8 @@ function Shop() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
+  useEffect(() => { setCanEdit(new URLSearchParams(window.location.search).has('editar')); }, []);
   const [shopName, setShopName] = useState(defaults.shopName);
   const [eyebrow, setEyebrow] = useState(defaults.eyebrow);
   const [headline, setHeadline] = useState(defaults.headline);
@@ -262,6 +264,7 @@ function Shop() {
   }
 
   function resetConfig() {
+    if (!window.confirm('Restaurar o padrão vai apagar as personalizações salvas neste navegador. Continuar?')) return;
     setShopName(defaults.shopName);
     setEyebrow(defaults.eyebrow);
     setHeadline(defaults.headline);
@@ -290,6 +293,7 @@ function Shop() {
         <a className="nav-link hidden sm:block" href="#sobre">{microcopy.navAbout}</a>
         <a className="nav-link hidden sm:block" href="#duvidas">{microcopy.navFaq}</a>
         <Button variant="outline" size="sm" asChild><a href="#colecao">{microcopy.navStore} <ArrowUpRight /></a></Button>
+        {canEdit && <Button variant="outline" size="sm" onClick={() => setEditorOpen(true)} aria-label="Abrir editor da loja"><Settings2 size={15} /> Editar loja</Button>}
       </nav>
     </header>
     <main>
