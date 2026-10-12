@@ -124,7 +124,7 @@ const defaults = {
   backgroundColor: '#e2e2e2',
   logoDot: '',
   logoDotColor: '#777777',
-  heroImage: asset('hero.webp') ?? '',
+  heroImage: asset('hero.webp') ?? heroAsset.url ?? '',
   contactLink: 'https://wa.link/rzzyx4',
   instagram: '',
 };
