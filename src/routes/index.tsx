@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState, type CSSProperties } from 'react';
-import { ArrowUpRight, ArrowDown, Plus, X, Asterisk, Settings2, Save, RotateCcw, Eye } from 'lucide-react';
+import { ArrowUpRight, ArrowDown, Plus, X, Settings2, Save, RotateCcw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import proposta from '@/assets/proposta.jpg';
 import orcamento from '@/assets/orcamento.jpg';
@@ -292,7 +292,6 @@ function Shop() {
     <main>
       <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.12), rgba(0,0,0,.03)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
         <div className="hero-inner page-width">
-          <p className="eyebrow flex items-center gap-2"><Asterisk size={15} /> {eyebrow}</p>
           {!heroImage && <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>}
           <div className="hero-bottom">
             <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
@@ -338,8 +337,6 @@ function Shop() {
             <label>Texto da seção “Sobre”<textarea rows={3} value={aboutCopy} onChange={e => setAboutCopy(e.target.value)} /></label>
           </fieldset>
           <fieldset className="editor-group"><legend>Logo, cores e imagem de destaque</legend>
-            <label>Pontinho da logo<input value={logoDot} onChange={e => setLogoDot(e.target.value)} maxLength={4} /></label>
-            <label className="color-field">Cor do pontinho <input type="color" value={logoDotColor} onChange={e => setLogoDotColor(e.target.value)} /><span>{logoDotColor}</span></label>
             <label className="color-field">Cor de fundo (sem foto) <input type="color" value={heroColor} onChange={e => setHeroColor(e.target.value)} /><span>{heroColor}</span></label>
             <label className="color-field">Fundo da página <input type="color" value={backgroundColor} onChange={e => setBackgroundColor(e.target.value)} /><span>{backgroundColor}</span></label>
             <label>URL da imagem de destaque<input type="url" placeholder="https://exemplo.com/foto.jpg" value={heroImage.startsWith('data:') ? '' : heroImage} onChange={e => setHeroImage(e.target.value)} /></label>
@@ -378,6 +375,6 @@ function Shop() {
       </section>
     </div>}
 
-    {selected && <div className="detail-overlay" onClick={() => setSelected(null)}><section className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-title" onClick={event => event.stopPropagation()}><img src={selected.image} alt={selected.name} width={1024} height={1024} className="w-full rounded-md object-cover" /><div className="pt-8"><Button autoFocus variant="ghost" size="icon" aria-label="Fechar produto" className="absolute top-2 right-2" onClick={() => setSelected(null)}><X /></Button><p className="eyebrow text-muted-foreground">{selected.category}</p><h2 id="product-title" className="section-title mt-4">{selected.name}</h2><p className="text-sm text-muted-foreground leading-7 my-5">{selected.description}</p><p className="text-xs text-muted-foreground mt-5">{microcopy.detailPriceNote}</p><Button variant="shop" size="lg" className="mt-4" asChild><a href={selected.buyUrl || '#colecao'} target={selected.buyUrl ? '_blank' : undefined} rel={selected.buyUrl ? 'noreferrer' : undefined}>{microcopy.collectionCta} <ArrowUpRight /></a></Button></div></section></div>}
+    {selected && <div className="detail-overlay" onClick={() => setSelected(null)}><section className="detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-title" onClick={event => event.stopPropagation()}><img src={selected.image} alt={selected.name} width={1024} height={1024} className="w-full rounded-md object-cover" /><div className="detail-modal-copy"><Button autoFocus variant="ghost" size="icon" aria-label="Fechar produto" className="absolute top-2 right-2" onClick={() => setSelected(null)}><X /></Button><p className="eyebrow text-muted-foreground">{selected.category}</p><h2 id="product-title" className="section-title mt-4">{selected.name}</h2><p className="text-sm text-muted-foreground leading-7 my-5">{selected.description}</p><p className="text-xs text-muted-foreground mt-5">{microcopy.detailPriceNote}</p><Button variant="shop" size="lg" className="mt-4" asChild><a href={selected.buyUrl || '#colecao'} target={selected.buyUrl ? '_blank' : undefined} rel={selected.buyUrl ? 'noreferrer' : undefined}>{microcopy.collectionCta} <ArrowUpRight /></a></Button></div></section></div>}
   </div>;
 }
