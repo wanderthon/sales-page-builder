@@ -294,7 +294,6 @@ function Shop() {
         <div className="hero-inner page-width">
           <p className="eyebrow flex items-center gap-2"><Asterisk size={15} /> {eyebrow}</p>
           {!heroImage && <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>}
-          <div className="hero-stamp" aria-hidden="true">{microcopy.stampTop}<span>✳</span>{microcopy.stampBottom}</div>
           <div className="hero-bottom">
             <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
             <Button variant="shop" size="lg" asChild><a href="#colecao">{microcopy.heroButton} <ArrowDown /></a></Button>
