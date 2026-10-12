@@ -300,11 +300,9 @@ function Shop() {
       </nav>
     </header>
     <main>
-      <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(0,0,0,.12), rgba(0,0,0,.03)), url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff' } : undefined}>
+      <section className={`hero${heroImage ? ' has-hero-image' : ''}`} style={heroImage ? { backgroundImage: `url("${heroImage}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
         <div className="hero-inner page-width">
-          {!heroImage && <h1 className="hero-title">{headline}<span className="text-background">.</span></h1>}
           <div className="hero-bottom">
-            <p className="hero-copy">{heroCopy.split('\n').map((line, i) => <span key={i}>{i > 0 && <br />}{line}</span>)}</p>
             <Button variant="shop" size="lg" asChild><a href="#colecao">{microcopy.heroButton} <ArrowDown /></a></Button>
           </div>
         </div>
@@ -336,9 +334,6 @@ function Shop() {
         <div className="editor-content">
           <fieldset className="editor-group"><legend>Identidade da loja</legend>
             <label>Nome da loja<input value={shopName} onChange={e => setShopName(e.target.value)} /></label>
-            <label>Frase pequena acima do título<input value={eyebrow} onChange={e => setEyebrow(e.target.value)} /></label>
-            <label>Título principal<input value={headline} onChange={e => setHeadline(e.target.value)} /></label>
-            <label>Texto de apresentação<textarea rows={3} value={heroCopy} onChange={e => setHeroCopy(e.target.value)} /></label>
           </fieldset>
           <fieldset className="editor-group"><legend>Vitrine e sobre</legend>
             <label>Chamada da coleção<input value={collectionEyebrow} onChange={e => setCollectionEyebrow(e.target.value)} /></label>
@@ -350,7 +345,7 @@ function Shop() {
             <label className="color-field">Cor de fundo (sem foto) <input type="color" value={heroColor} onChange={e => setHeroColor(e.target.value)} /><span>{heroColor}</span></label>
             <label className="color-field">Fundo da página <input type="color" value={backgroundColor} onChange={e => setBackgroundColor(e.target.value)} /><span>{backgroundColor}</span></label>
             <label>URL da imagem de destaque<input type="url" placeholder="https://exemplo.com/foto.jpg" value={heroImage.startsWith('data:') ? '' : heroImage} onChange={e => setHeroImage(e.target.value)} /></label>
-            <label className="image-upload-label">Enviar foto do computador<input type="file" accept="image/*" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { setHeroImage(await fileToDataUrl(file)); setSavedMessage('Foto de destaque carregada. Clique em Salvar para guardar.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } e.currentTarget.value = ''; }} /></label>
+            <label className="image-upload-label">Enviar foto do computador<input type="file" accept="image/*" onChange={async e => { const input = e.currentTarget; const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { setHeroImage(await fileToDataUrl(file)); setSavedMessage('Foto de destaque carregada. Clique em Salvar para guardar.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } input.value = ''; }} /></label>
             {heroImage && <><img className="editor-image-preview" src={heroImage} alt="Prévia da imagem de destaque" /><Button variant="outline" size="sm" onClick={() => setHeroImage('')}>Remover foto de destaque</Button></>}
           </fieldset>
           <fieldset className="editor-group"><legend>Contatos</legend>
@@ -376,7 +371,7 @@ function Shop() {
               <label>Etiqueta (opcional)<input value={product.label} onChange={e => updateProduct(product.id, 'label', e.target.value)} /></label>
               <label>Descrição do produto<textarea rows={3} value={product.description} onChange={e => updateProduct(product.id, 'description', e.target.value)} /></label>
               <label>URL da imagem<input type="url" placeholder="https://exemplo.com/imagem.jpg" value={product.image.startsWith('data:') || product.image.startsWith('/assets/') ? '' : product.image} onChange={e => updateProduct(product.id, 'image', e.target.value)} /></label>
-              <label className="image-upload-label">Enviar imagem do computador<input type="file" accept="image/*" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { const dataUrl = await fileToDataUrl(file); updateProduct(product.id, 'image', dataUrl); setSavedMessage('Imagem carregada. Clique em Salvar para guardar a alteração.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } e.currentTarget.value = ''; }} /></label>
+              <label className="image-upload-label">Enviar imagem do computador<input type="file" accept="image/*" onChange={async e => { const input = e.currentTarget; const file = e.target.files?.[0]; if (!file) return; if (!file.type.startsWith('image/')) { setSavedMessage('Escolha um arquivo de imagem.'); return; } if (file.size > 8 * 1024 * 1024) { setSavedMessage('A imagem precisa ter até 8 MB.'); return; } try { const dataUrl = await fileToDataUrl(file); updateProduct(product.id, 'image', dataUrl); setSavedMessage('Imagem carregada. Clique em Salvar para guardar a alteração.'); } catch (error) { setSavedMessage(error instanceof Error ? error.message : 'Falha ao carregar imagem.'); } input.value = ''; }} /></label>
               <img className="editor-image-preview" src={product.image} alt={'Prévia de ' + product.name} />
             </div>)}
           </fieldset>
