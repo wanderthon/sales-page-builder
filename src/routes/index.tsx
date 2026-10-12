@@ -55,17 +55,31 @@ async function readSavedConfig(): Promise<any | null> {
 }
 
 async function writeSavedConfig(config: unknown): Promise<void> {
-  if (!('indexedDB' in window)) throw new Error('Este navegador não oferece armazenamento local compatível.');
-  const db = await openConfigDb();
+  let databaseError: unknown;
   try {
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, 'readwrite');
-      transaction.objectStore(STORE_NAME).put(config, CONFIG_KEY);
-      transaction.oncomplete = () => resolve();
-      transaction.onerror = () => reject(transaction.error ?? new Error('Falha ao gravar as alterações.'));
-      transaction.onabort = () => reject(transaction.error ?? new Error('O navegador cancelou a gravação.'));
-    });
-  } finally { db.close(); }
+    if (!('indexedDB' in window)) throw new Error('IndexedDB indisponível.');
+    const db = await openConfigDb();
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        transaction.objectStore(STORE_NAME).put(config, CONFIG_KEY);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error('Falha ao gravar as alterações.'));
+        transaction.onabort = () => reject(transaction.error ?? new Error('O navegador cancelou a gravação.'));
+      });
+      window.localStorage.removeItem(CONFIG_KEY);
+      return;
+    } finally { db.close(); }
+  } catch (error) {
+    databaseError = error;
+  }
+  try {
+    window.localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+  } catch (fallbackError) {
+    const detail = fallbackError instanceof Error ? fallbackError.message : 'armazenamento local indisponível';
+    throw new Error('O navegador bloqueou o salvamento (' + detail + '). Tente uma imagem menor ou permita o armazenamento do site.');
+  }
+  if (databaseError) console.warn('Configuração salva no armazenamento alternativo.', databaseError);
 }
 
 async function removeSavedConfig(): Promise<void> {
