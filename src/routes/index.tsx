@@ -118,7 +118,7 @@ const defaults = {
   logoDot: '.',
   logoDotColor: '#777777',
   heroImage: '',
-  phone: '',
+  contactLink: '',
   instagram: '',
 };
 
@@ -129,7 +129,7 @@ const defaultMicrocopy = {
   aboutEyebrow: 'MENOS COMPLICAÇÃO, MAIS CRIAÇÃO', faqEyebrow: 'VALE SABER', faqTitle: 'Alguma dúvida?',
   footerTagline: 'Feito para criar.', footerBack: 'Voltar à coleção', contactTitle: 'Vamos conversar?',
   detailsButton: 'Detalhes', detailPriceNote: 'O preço pode ser informado na página de compra.', footerCopyright: '© 2026',
-  phoneLabel: 'Telefone', whatsappLabel: 'WhatsApp', instagramLabel: 'Instagram',
+  phoneLabel: 'Conversar no privado', instagramLabel: 'Ver perfil no Instagram',
 };
 
 const defaultFaqs = [
@@ -156,7 +156,7 @@ function Shop() {
   const [logoDot, setLogoDot] = useState(defaults.logoDot);
   const [logoDotColor, setLogoDotColor] = useState(defaults.logoDotColor);
   const [heroImage, setHeroImage] = useState(defaults.heroImage);
-  const [phone, setPhone] = useState(defaults.phone);
+  const [contactLink, setContactLink] = useState(defaults.contactLink);
   const [instagram, setInstagram] = useState(defaults.instagram);
   const [microcopy, setMicrocopy] = useState(defaultMicrocopy);
   const [faqs, setFaqs] = useState(defaultFaqs);
@@ -180,7 +180,7 @@ function Shop() {
       setLogoDot(config.logoDot ?? defaults.logoDot);
       setLogoDotColor(config.logoDotColor ?? defaults.logoDotColor);
       setHeroImage(config.heroImage ?? defaults.heroImage);
-      setPhone(config.phone ?? defaults.phone);
+      setContactLink(config.contactLink ?? '');
       setInstagram(config.instagram ?? defaults.instagram);
       setMicrocopy({ ...defaultMicrocopy, ...(config.microcopy ?? {}) });
       setFaqs(Array.isArray(config.faqs) ? config.faqs : defaultFaqs);
@@ -201,7 +201,7 @@ function Shop() {
     const config = {
       shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle,
       aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage,
-      phone, instagram, microcopy, faqs, products: editableProducts,
+      contactLink, instagram, microcopy, faqs, products: editableProducts,
       savedAt: new Date().toISOString(),
     };
     const timeout = window.setTimeout(() => {
@@ -213,7 +213,7 @@ function Shop() {
       });
     }, 700);
     return () => window.clearTimeout(timeout);
-  }, [configLoaded, shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle, aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage, phone, instagram, microcopy, faqs, editableProducts]);
+  }, [configLoaded, shopName, eyebrow, headline, heroCopy, collectionEyebrow, collectionTitle, aboutTitle, aboutCopy, heroColor, backgroundColor, logoDot, logoDotColor, heroImage, contactLink, instagram, microcopy, faqs, editableProducts]);
 
   useEffect(() => {
     if (!selected) return;
@@ -271,7 +271,7 @@ function Shop() {
     setLogoDot(defaults.logoDot);
     setLogoDotColor(defaults.logoDotColor);
     setHeroImage(defaults.heroImage);
-    setPhone(defaults.phone);
+    setContactLink(defaults.contactLink);
     setInstagram(defaults.instagram);
     setMicrocopy(defaultMicrocopy);
     setFaqs(defaultFaqs);
@@ -318,7 +318,7 @@ function Shop() {
       <section id="sobre" className="about-band"><div className="about-inner page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.aboutEyebrow}</p><h2 className="section-title">{aboutTitle}</h2></div><p className="text-muted-foreground text-sm leading-7">{aboutCopy}</p></div></section>
       <section id="duvidas" className="faq page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.faqEyebrow}</p><h2 className="section-title">{microcopy.faqTitle}</h2></div><div>{faqs.map((faq, index) => <details key={index}><summary>{faq.question}<Plus size={16} className="shrink-0" /></summary><p>{faq.answer}</p></details>)}</div></section>
     </main>
-    <section className="contact-band page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.contactTitle}</p><div className="contact-links">{phone && <><a href={'tel:+' + phone.replace(/\D/g, '')}>{microcopy.phoneLabel} <ArrowUpRight size={15} /></a><a href={'https://wa.me/' + phone.replace(/\D/g, '')} target="_blank" rel="noreferrer">{microcopy.whatsappLabel} <ArrowUpRight size={15} /></a></>}{instagram && <a href={instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace(/^@/, '')} target="_blank" rel="noreferrer">{microcopy.instagramLabel} <ArrowUpRight size={15} /></a>}</div></div></section>
+    <section className="contact-band page-width"><div><p className="eyebrow text-muted-foreground mb-3">{microcopy.contactTitle}</p><div className="contact-links">{contactLink && <a href={contactLink} target="_blank" rel="noreferrer">{microcopy.phoneLabel} <ArrowUpRight size={15} /></a>}{instagram && <a href={instagram.startsWith('http') ? instagram : 'https://instagram.com/' + instagram.replace(/^@/, '')} target="_blank" rel="noreferrer">{microcopy.instagramLabel} <ArrowUpRight size={15} /></a>}</div></div></section>
     <footer className="footer page-width"><a href="#" className="brand">{shopName}<span style={{ color: logoDotColor }}>{logoDot}</span></a><p className="text-xs text-muted-foreground">{microcopy.footerCopyright} {shopName}. {microcopy.footerTagline}</p><a href="#colecao" className="nav-link flex items-center gap-2">{microcopy.footerBack} <ArrowUpRight size={15} /></a></footer>
 
     {editorOpen && <div className="editor-overlay" onClick={() => setEditorOpen(false)}>
@@ -347,12 +347,12 @@ function Shop() {
             {heroImage && <><img className="editor-image-preview" src={heroImage} alt="Prévia da imagem de destaque" /><Button variant="outline" size="sm" onClick={() => setHeroImage('')}>Remover foto de destaque</Button></>}
           </fieldset>
           <fieldset className="editor-group"><legend>Contatos</legend>
-            <label>Telefone com DDD<input value={phone} onChange={e => setPhone(e.target.value)} placeholder="5561999999999" /></label>
-            <p className="editor-help">O número será usado no link do WhatsApp, incluindo código do país e DDD (ex.: 5561...).</p>
-            <label>Perfil ou URL do Instagram<input value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@seuperfil ou https://instagram.com/seuperfil" /></label>
+            <label>Link para conversa no privado<input type="url" value={contactLink} onChange={e => setContactLink(e.target.value)} placeholder="https://wa.me/... ou link de mensagem" /></label>
+            <p className="editor-help">Cole o link direto que abre a conversa privada, por exemplo um link do WhatsApp, Instagram Direct ou outra plataforma.</p>
+            <label>Link do perfil do Instagram<input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://instagram.com/seuperfil" /></label>
           </fieldset>
           <fieldset className="editor-group"><legend>Textos menores do site</legend>
-            {(Object.keys(defaultMicrocopy) as Array<keyof typeof defaultMicrocopy>).map(key => <label key={key}>{({ navAbout: 'Link Sobre', navFaq: 'Link Dúvidas', navStore: 'Botão A loja', heroButton: 'Botão do destaque', tickerOne: 'Faixa animada: primeira frase', tickerTwo: 'Faixa animada: segunda frase', stampTop: 'Selo redondo: frase superior', stampBottom: 'Selo redondo: frase inferior', collectionCta: 'Botão de compra', aboutEyebrow: 'Chamada da seção Sobre', faqEyebrow: 'Chamada das dúvidas', faqTitle: 'Título das dúvidas', footerTagline: 'Frase do rodapé', footerBack: 'Link do rodapé', contactTitle: 'Título dos contatos', phoneLabel: 'Rótulo do telefone', whatsappLabel: 'Rótulo do WhatsApp', instagramLabel: 'Rótulo do Instagram', detailsButton: 'Botão de detalhes do produto', detailPriceNote: 'Observação abaixo da descrição do produto', footerCopyright: 'Texto de direitos autorais' } as Record<keyof typeof defaultMicrocopy, string>)[key]}<input value={microcopy[key]} onChange={e => updateMicrocopy(key, e.target.value)} /></label>)}
+            {(Object.keys(defaultMicrocopy) as Array<keyof typeof defaultMicrocopy>).map(key => <label key={key}>{({ navAbout: 'Link Sobre', navFaq: 'Link Dúvidas', navStore: 'Botão A loja', heroButton: 'Botão do destaque', tickerOne: 'Faixa animada: primeira frase', tickerTwo: 'Faixa animada: segunda frase', stampTop: 'Selo redondo: frase superior', stampBottom: 'Selo redondo: frase inferior', collectionCta: 'Botão de compra', aboutEyebrow: 'Chamada da seção Sobre', faqEyebrow: 'Chamada das dúvidas', faqTitle: 'Título das dúvidas', footerTagline: 'Frase do rodapé', footerBack: 'Link do rodapé', contactTitle: 'Título dos contatos', phoneLabel: 'Texto do botão de contato', instagramLabel: 'Texto do botão do Instagram', detailsButton: 'Botão de detalhes do produto', detailPriceNote: 'Observação abaixo da descrição do produto', footerCopyright: 'Texto de direitos autorais' } as Record<keyof typeof defaultMicrocopy, string>)[key]}<input value={microcopy[key]} onChange={e => updateMicrocopy(key, e.target.value)} /></label>)}
           </fieldset>
           <fieldset className="editor-group"><legend>Dúvidas frequentes</legend>
             {faqs.map((faq, index) => <div className="editor-product" key={index}><h3>Pergunta {index + 1}</h3><label>Pergunta<input value={faq.question} onChange={e => updateFaq(index, 'question', e.target.value)} /></label><label>Resposta<textarea rows={3} value={faq.answer} onChange={e => updateFaq(index, 'answer', e.target.value)} /></label><Button variant="outline" size="sm" onClick={() => setFaqs(current => current.filter((_, i) => i !== index))}>Remover pergunta</Button></div>)}
